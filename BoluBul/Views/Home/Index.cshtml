@@ -1,0 +1,152 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "BoluBul - Bolu’nun Yerel İşletme Rehberi";
+}
+
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-xl-9 col-lg-10">
+                <span class="hero-kicker">Bolu’nun yerel işletme rehberi</span>
+                <h1 class="hero-title">Bolu’da aradığın yer burada</h1>
+                <p class="hero-subtitle">Restoran, kafe, oto servis, kuaför, sağlık, eğitim ve daha fazlasını BoluBul ile kolayca keşfet.</p>
+                <form class="hero-search" asp-controller="Businesses" asp-action="Index" method="get">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-lg-7">
+                            <label class="visually-hidden" for="homeSearch">İşletme adı veya kategori ara</label>
+                            <input id="homeSearch" class="form-control form-control-lg" name="search" placeholder="İşletme adı veya kategori ara…" />
+                        </div>
+                        <div class="col-lg-2">
+                            <label class="visually-hidden" for="homeCity">Konum</label>
+                            <select id="homeCity" class="form-select form-select-lg" disabled>
+                                <option>Bolu</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 d-grid d-lg-flex gap-2">
+                            <button class="btn bb-btn-primary btn-lg px-4" type="submit">Ara</button>
+                            <a class="btn bb-btn-light btn-lg" asp-controller="Businesses" asp-action="Index">Keşfet</a>
+                        </div>
+                    </div>
+                </form>
+                <div class="hero-trust">
+                    <span>Yerel işletmeler</span>
+                    <span>Kategoriye göre keşfet</span>
+                    <span>Hızlı iletişim</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats-overlap">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-number">@Model.RegisteredBusinessCount</div><div>Kayıtlı işletme</div></div></div>
+            <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-number">@Model.CategoryCount</div><div>Kategori</div></div></div>
+            <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-number">@Model.ReviewCount</div><div>Kullanıcı yorumu</div></div></div>
+            <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-number">@Model.FeaturedBusinessCount</div><div>Öne çıkan işletme</div></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="page-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end gap-3 mb-4">
+            <div>
+                <div class="section-eyebrow">Kategoriler</div>
+                <h2 class="section-title">Bolu’da ihtiyacına göre keşfet</h2>
+                <p class="text-muted mb-0">Yerel hizmetleri temiz, hızlı ve güvenilir şekilde filtrele.</p>
+            </div>
+            <a class="btn bb-btn-outline d-none d-md-inline-flex" asp-controller="Categories" asp-action="Index">Tüm kategoriler</a>
+        </div>
+        <div class="row g-3">
+            @if (Model.Categories.Any())
+            {
+                @foreach (var category in Model.Categories.Take(8))
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <partial name="_CategoryCard" model="category" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="empty-state">
+                        <span class="empty-state-icon">▦</span>
+                        <h3>Kayıtlı kategori bulunmuyor.</h3>
+                        <p>Kategoriler seed verisi veya yönetim paneli üzerinden eklendiğinde burada görünecek.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="page-section bb-surface-band">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end gap-3 mb-4">
+            <div>
+                <div class="section-eyebrow">Öne çıkanlar</div>
+                <h2 class="section-title">Bolu’da dikkat çeken işletmeler</h2>
+                <p class="text-muted mb-0">Onaylı ve aktif işletmeler arasından seçilen yerel duraklar.</p>
+            </div>
+            <a class="btn bb-btn-primary d-none d-md-inline-flex" asp-controller="Businesses" asp-action="Index">İşletmeleri keşfet</a>
+        </div>
+        <div class="row g-4">
+            @if (Model.FeaturedBusinesses.Any())
+            {
+                @foreach (var business in Model.FeaturedBusinesses)
+                {
+                    <div class="col-md-6 col-xl-4">
+                        <partial name="_BusinessCard" model="business" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="empty-state">
+                        <span class="empty-state-icon">★</span>
+                        <h3>Henüz öne çıkan işletme yok.</h3>
+                        <p>Onaylanan işletmeler öne çıkarıldığında burada listelenecek.</p>
+                        <a class="btn bb-btn-outline" asp-controller="Businesses" asp-action="Index">İşletmeleri keşfet</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="page-section">
+    <div class="container">
+        <div class="mb-4">
+            <div class="section-eyebrow">Bolu kimliği</div>
+            <h2 class="section-title">Doğa, lezzet ve yerel hizmet aynı rehberde</h2>
+        </div>
+        <div class="row g-3">
+            @foreach (var card in Model.DiscoveryCards)
+            {
+                <div class="col-md-6 col-xl-3">
+                    <div class="discovery-card @card.CssClass">
+                        <h5 class="fw-bold">@card.Title</h5>
+                        <p class="mb-0">@card.Text</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="page-section pt-0">
+    <div class="container">
+        <div class="cta-band d-lg-flex justify-content-between align-items-center gap-4">
+            <div>
+                <div class="hero-kicker mb-3">İşletme sahipleri için</div>
+                <h2 class="fw-bold">İşletmeni BoluBul’a ekle</h2>
+                <p class="mb-lg-0">Bolu’daki müşteriler seni daha kolay bulsun. İşletme profilini oluştur, bilgilerini güncelle ve görünürlüğünü artır.</p>
+            </div>
+            <a class="btn bb-btn-light btn-lg mt-3 mt-lg-0" asp-area="Owner" asp-controller="Businesses" asp-action="Create">Ücretsiz başla</a>
+        </div>
+    </div>
+</section>

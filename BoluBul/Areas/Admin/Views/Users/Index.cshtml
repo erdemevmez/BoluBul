@@ -1,0 +1,46 @@
+@model IReadOnlyList<AdminUserRowViewModel>
+@{
+    ViewData["Title"] = "Kullanıcı yönetimi";
+}
+
+<nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Yönetim paneli</a>
+    <span>Kullanıcılar</span>
+</nav>
+
+<div class="panel-card p-4">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>Kullanıcı</th><th>E-posta</th><th>Roller</th><th>Kayıt tarihi</th><th>İşlemler</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.FullName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Roles</td>
+                        <td>@item.CreatedAt.ToShortDateString()</td>
+                        <td>
+                            <form asp-action="MakeBusinessOwner" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-sm bb-btn-outline">İşletme sahibi yap</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state my-0">
+            <span class="empty-state-icon">◎</span>
+            <h3>Kayıtlı kullanıcı bulunmuyor.</h3>
+            <p>Kullanıcılar kayıt olduğunda burada listelenecek.</p>
+        </div>
+    }
+</div>

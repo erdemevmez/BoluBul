@@ -1,0 +1,270 @@
+@model BusinessDetailViewModel
+@{
+    ViewData["Title"] = $"{Model.Name} - BoluBul";
+    var categoryName = string.IsNullOrWhiteSpace(Model.CategoryName) ? "Kategori belirtilmemiş" : Model.CategoryName;
+    var districtText = string.IsNullOrWhiteSpace(Model.NeighborhoodName)
+        ? Model.DistrictName
+        : $"{Model.DistrictName} / {Model.NeighborhoodName}";
+    var shortDescription = string.IsNullOrWhiteSpace(Model.ShortDescription)
+        ? "Bu işletme için kısa açıklama henüz eklenmemiş."
+        : Model.ShortDescription;
+
+    static string FormatDay(DayOfWeek day)
+    {
+        return day switch
+        {
+            DayOfWeek.Monday => "Pazartesi",
+            DayOfWeek.Tuesday => "Salı",
+            DayOfWeek.Wednesday => "Çarşamba",
+            DayOfWeek.Thursday => "Perşembe",
+            DayOfWeek.Friday => "Cuma",
+            DayOfWeek.Saturday => "Cumartesi",
+            DayOfWeek.Sunday => "Pazar",
+            _ => day.ToString()
+        };
+    }
+}
+
+<section class="detail-cover">
+    <div class="container">
+        <nav class="bb-breadcrumb bb-breadcrumb-on-dark" aria-label="Sayfa yolu">
+            <a asp-controller="Home" asp-action="Index">Ana sayfa</a>
+            <a asp-controller="Businesses" asp-action="Index">İşletmeler</a>
+            <span>@Model.Name</span>
+        </nav>
+
+        <div class="row align-items-end g-4">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                    {
+                        <img src="@Model.LogoUrl" alt="@Model.Name logosu" class="business-logo object-fit-cover" />
+                    }
+                    else
+                    {
+                        <span class="business-logo" aria-hidden="true">@categoryName.Substring(0, 1)</span>
+                    }
+                    <div>
+                        <div class="hero-kicker mb-2">@categoryName · @districtText</div>
+                        <h1 class="fw-bold display-5 mb-0">@Model.Name</h1>
+                    </div>
+                </div>
+                <p class="lead mb-0">@shortDescription</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <span class="rating-badge">@Model.AverageRating.ToString("0.0") / 5 · @Model.ReviewCount yorum</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="panel-card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                        <div>
+                            <div class="section-eyebrow">Genel bilgi</div>
+                            <h2 class="fw-bold mb-0">İşletme hakkında</h2>
+                        </div>
+                        @if (Model.IsFavorite)
+                        {
+                            <span class="bb-badge">Favorilerinde</span>
+                        }
+                    </div>
+                    <p class="text-muted mb-0">@(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "Açıklama bilgisi henüz eklenmemiş.")</p>
+                    <p class="muted-small mt-3 mb-0">Bilgiler işletme sahibi veya herkese açık kaynaklardan derlenmiş olabilir. Hatalı bilgi görüyorsanız bizimle iletişime geçebilirsiniz.</p>
+                </div>
+
+                <div class="panel-card p-4 mb-4">
+                    <h2 class="fw-bold h4">Galeri</h2>
+                    <div class="row g-3">
+                        @if (Model.Images.Any())
+                        {
+                            @foreach (var image in Model.Images)
+                            {
+                                <div class="col-md-4">
+                                    <img class="img-fluid rounded" src="@image.ImageUrl" alt="@(image.AltText ?? Model.Name)" />
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="empty-state my-0">
+                                    <span class="empty-state-icon">▧</span>
+                                    <h3>Galeri fotoğrafı henüz eklenmemiş.</h3>
+                                    <p>İşletme sahibi fotoğraf eklediğinde burada görünecek.</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="panel-card p-4 mb-4">
+                    <h2 class="fw-bold h4">Harita</h2>
+                    @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                    {
+                        <div class="map-placeholder">
+                            <strong>Konum bilgisi hazır</strong>
+                            <span>@Model.Latitude, @Model.Longitude</span>
+                            <a class="btn bb-btn-light mt-3" asp-controller="Stats" asp-action="DirectionClick" asp-route-businessId="@Model.Id">Yol tarifi al</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="map-placeholder">
+                            <strong>Harita bilgisi henüz eklenmemiş.</strong>
+                            <span>Adres bilgisiyle yol tarifi almayı deneyebilirsin.</span>
+                            <a class="btn bb-btn-light mt-3" asp-controller="Stats" asp-action="DirectionClick" asp-route-businessId="@Model.Id">Yol tarifi al</a>
+                        </div>
+                    }
+                </div>
+
+                <div class="panel-card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                        <h2 class="fw-bold h4 mb-0">Yorumlar</h2>
+                        <span class="muted-small">@Model.ReviewCount yorum</span>
+                    </div>
+                    @if (Model.Reviews.Any())
+                    {
+                        @foreach (var review in Model.Reviews)
+                        {
+                            <div class="border-top pt-3 mt-3">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <strong>@review.UserDisplayName</strong>
+                                    <span class="rating-badge">@review.Rating / 5</span>
+                                </div>
+                                <p class="mb-0 mt-2">@review.Comment</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state my-0">
+                            <span class="empty-state-icon">✎</span>
+                            <h3>Bu işletmeye henüz yorum yapılmamış.</h3>
+                            <p>İlk deneyimi paylaşan kişi sen olabilirsin.</p>
+                        </div>
+                    }
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Reviews" asp-action="Create" method="post" class="mt-4">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="BusinessId" value="@Model.ReviewForm.BusinessId" />
+                            <input type="hidden" name="BusinessSlug" value="@Model.ReviewForm.BusinessSlug" />
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="Rating" class="form-label">Puan</label>
+                                    <select id="Rating" name="Rating" class="form-select">
+                                        <option value="5">5</option>
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-9">
+                                    <label for="Comment" class="form-label">Yorum</label>
+                                    <textarea id="Comment" name="Comment" class="form-control" rows="3" maxlength="1000" placeholder="Deneyimini kısaca paylaş"></textarea>
+                                    <div class="form-hint">Yorumunuz yayınlanmadan önce kontrol edilebilir.</div>
+                                </div>
+                                <div class="col-12"><button class="btn bb-btn-primary">Yorumu gönder</button></div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light mt-4 mb-0">Yorum yapmak için <a asp-controller="Account" asp-action="Login">giriş yap</a>.</div>
+                    }
+                </div>
+
+                <div class="panel-card p-4">
+                    <h2 class="fw-bold h4">Benzer işletmeler</h2>
+                    <p class="text-muted mb-0">Benzer işletmeler ve yakın çevredeki öneriler sonraki aşamada listelenecek.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="panel-card p-4 mb-4">
+                    <h2 class="fw-bold h4">Hızlı iletişim</h2>
+                    <div class="contact-list">
+                        <div>
+                            <span>Telefon</span>
+                            <strong>@(!string.IsNullOrWhiteSpace(Model.Phone) ? Model.Phone : "Telefon bilgisi eklenmemiş.")</strong>
+                        </div>
+                        <div>
+                            <span>WhatsApp</span>
+                            <strong>@(!string.IsNullOrWhiteSpace(Model.WhatsApp) ? Model.WhatsApp : "WhatsApp bilgisi eklenmemiş.")</strong>
+                        </div>
+                        <div>
+                            <span>Web sitesi</span>
+                            @if (!string.IsNullOrWhiteSpace(Model.WebsiteUrl))
+                            {
+                                <a href="@Model.WebsiteUrl" target="_blank" rel="noopener">Web sitesini aç</a>
+                            }
+                            else
+                            {
+                                <strong>Web sitesi eklenmemiş.</strong>
+                            }
+                        </div>
+                        <div>
+                            <span>Adres</span>
+                            <strong>@(!string.IsNullOrWhiteSpace(Model.Address) ? Model.Address : "Adres bilgisi eklenmemiş.")</strong>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-3">
+                        @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                        {
+                            <a class="btn bb-btn-primary" asp-controller="Stats" asp-action="PhoneClick" asp-route-businessId="@Model.Id">Telefon et</a>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.WhatsApp))
+                        {
+                            <a class="btn bb-btn-outline" asp-controller="Stats" asp-action="WhatsAppClick" asp-route-businessId="@Model.Id">WhatsApp</a>
+                        }
+                        <a class="btn bb-btn-outline" asp-controller="Stats" asp-action="DirectionClick" asp-route-businessId="@Model.Id">Yol tarifi al</a>
+                    </div>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Favorites" asp-action="Toggle" method="post" class="mt-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="businessId" value="@Model.Id" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <button class="btn bb-btn-light w-100" type="submit">@(Model.IsFavorite ? "Favorilerden kaldır" : "Favorilere ekle")</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="form-hint mt-3">Favorilere eklemek için giriş yapabilirsiniz.</div>
+                    }
+                </div>
+
+                <div class="panel-card p-4 mb-4">
+                    <h2 class="fw-bold h4">Çalışma saatleri</h2>
+                    @if (Model.Hours.Any())
+                    {
+                        @foreach (var hour in Model.Hours)
+                        {
+                            <div class="d-flex justify-content-between border-top py-2">
+                                <span>@FormatDay(hour.DayOfWeek)</span>
+                                <span>@(hour.IsClosed ? "Kapalı" : $"{hour.OpenTime:hh\\:mm} - {hour.CloseTime:hh\\:mm}")</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Çalışma saatleri henüz eklenmemiş.</p>
+                    }
+                </div>
+
+                <div class="owner-claim-card">
+                    <h2 class="fw-bold h5">Bu işletme size mi ait?</h2>
+                    <p>Bilgileri güncellemek veya profili sahiplenmek için bizimle iletişime geçebilirsiniz.</p>
+                    <a class="btn bb-btn-light" href="mailto:info@bolubul.com">İletişime geç</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

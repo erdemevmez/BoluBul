@@ -1,0 +1,58 @@
+@model BusinessHoursViewModel
+@{
+    ViewData["Title"] = "Çalışma saatleri";
+
+    static string FormatDay(DayOfWeek day)
+    {
+        return day switch
+        {
+            DayOfWeek.Monday => "Pazartesi",
+            DayOfWeek.Tuesday => "Salı",
+            DayOfWeek.Wednesday => "Çarşamba",
+            DayOfWeek.Thursday => "Perşembe",
+            DayOfWeek.Friday => "Cuma",
+            DayOfWeek.Saturday => "Cumartesi",
+            DayOfWeek.Sunday => "Pazar",
+            _ => day.ToString()
+        };
+    }
+}
+
+<nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+    <a asp-area="Owner" asp-controller="Dashboard" asp-action="Index">İşletme paneli</a>
+    <a asp-area="Owner" asp-controller="Businesses" asp-action="Index">İşletmelerim</a>
+    <span>Çalışma saatleri</span>
+</nav>
+
+<div class="panel-card p-4">
+    <h2 class="fw-bold h4">@Model.BusinessName çalışma saatleri</h2>
+    <p class="text-muted">Kapalı günleri işaretleyebilir, açık günler için saat aralığı girebilirsin.</p>
+    <form asp-action="Hours" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="BusinessId" />
+        <input type="hidden" asp-for="BusinessName" />
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>Gün</th><th>Açılış</th><th>Kapanış</th><th>Kapalı</th></tr></thead>
+                <tbody>
+                @for (var i = 0; i < Model.Hours.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="hidden" asp-for="Hours[i].DayOfWeek" />
+                            @FormatDay(Model.Hours[i].DayOfWeek)
+                        </td>
+                        <td><input asp-for="Hours[i].OpenTime" class="form-control" type="time" /></td>
+                        <td><input asp-for="Hours[i].CloseTime" class="form-control" type="time" /></td>
+                        <td><input asp-for="Hours[i].IsClosed" class="form-check-input" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn bb-btn-primary">Saatleri kaydet</button>
+            <a class="btn bb-btn-outline" asp-action="Index">Vazgeç</a>
+        </div>
+    </form>
+</div>

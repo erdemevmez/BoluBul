@@ -1,0 +1,22 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Bir hata oluştu";
+}
+
+<section class="page-section">
+    <div class="container">
+        <div class="panel-card p-5 text-center">
+            <span class="empty-state-icon mb-3">!</span>
+            <h1 class="section-title">Bir hata oluştu</h1>
+            <p class="text-muted">İşlem sırasında beklenmeyen bir sorun yaşandı. Lütfen daha sonra tekrar deneyin.</p>
+            @if (Model.ShowRequestId)
+            {
+                <p class="muted-small mb-4">İstek numarası: <code>@Model.RequestId</code></p>
+            }
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a class="btn bb-btn-primary" asp-controller="Home" asp-action="Index">Ana sayfaya dön</a>
+                <a class="btn bb-btn-outline" asp-controller="Businesses" asp-action="Index">İşletmeleri keşfet</a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,59 @@
+@model IReadOnlyList<AdminReviewRowViewModel>
+@{
+    ViewData["Title"] = "Yorum yönetimi";
+    var pendingOnly = ViewBag.PendingOnly is bool value && value;
+}
+
+<nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Yönetim paneli</a>
+    <span>Yorumlar</span>
+</nav>
+
+<div class="panel-card p-3 mb-4">
+    <a class="btn btn-sm @(pendingOnly ? "bb-btn-outline" : "bb-btn-primary")" asp-action="Index">Tüm yorumlar</a>
+    <a class="btn btn-sm @(pendingOnly ? "bb-btn-primary" : "bb-btn-outline")" asp-action="Index" asp-route-pendingOnly="true">Onay bekleyenler</a>
+</div>
+
+<div class="panel-card p-4">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>İşletme</th><th>Kullanıcı</th><th>Puan</th><th>Yorum</th><th>Durum</th><th>İşlemler</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.BusinessName</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Rating</td>
+                        <td>@item.Comment</td>
+                        <td><span class="status-pill @(item.IsApproved ? "status-success" : "status-warning")">@(item.IsApproved ? "Onaylandı" : "Onay bekliyor")</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                @if (!item.IsApproved)
+                                {
+                                    <form asp-action="Approve" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@item.Id" /><button class="btn btn-sm bb-btn-primary">Onayla</button></form>
+                                }
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('Bu yorumu silmek istediğinize emin misiniz?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button class="btn btn-sm btn-outline-danger">Sil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state my-0">
+            <span class="empty-state-icon">✎</span>
+            <h3>@(pendingOnly ? "Onay bekleyen yorum bulunmuyor." : "Henüz yorum yapılmamış.")</h3>
+            <p>Yeni yorumlar geldiğinde burada listelenecek.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,45 @@
+@model BusinessListViewModel
+@{
+    var categoryName = string.IsNullOrWhiteSpace(Model.Category) ? "Kategori" : Model.Categories.FirstOrDefault(c => c.Slug == Model.Category)?.Name ?? Model.Category;
+    ViewData["Title"] = $"{categoryName} İşletmeleri";
+}
+
+<section class="page-section">
+    <div class="container">
+        <nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+            <a asp-controller="Home" asp-action="Index">Ana sayfa</a>
+            <a asp-controller="Categories" asp-action="Index">Kategoriler</a>
+            <span>@categoryName</span>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-end gap-3 mb-4">
+            <div>
+                <div class="section-eyebrow">Kategori</div>
+                <h1 class="section-title">@categoryName işletmeleri</h1>
+                <p class="text-muted mb-0">Bu kategorideki onaylı ve aktif işletmeleri keşfet.</p>
+            </div>
+            <a class="btn bb-btn-outline d-none d-md-inline-flex" asp-controller="Categories" asp-action="Index">Tüm kategoriler</a>
+        </div>
+
+        @if (Model.Businesses.Any())
+        {
+            <div class="row g-4">
+                @foreach (var business in Model.Businesses)
+                {
+                    <div class="col-md-6 col-xl-4">
+                        <partial name="_BusinessCard" model="business" />
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="empty-state-icon">▦</span>
+                <h3>Bu kategoride kayıtlı işletme yok.</h3>
+                <p>Onaylanan işletmeler bu kategori altında görünür.</p>
+                <a class="btn bb-btn-primary" asp-controller="Businesses" asp-action="Index">İşletmeleri keşfet</a>
+            </div>
+        }
+    </div>
+</section>

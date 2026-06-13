@@ -1,0 +1,39 @@
+@model IReadOnlyList<ReviewItemViewModel>
+@{
+    ViewData["Title"] = "Yorumlarım";
+}
+
+<section class="page-section">
+    <div class="container">
+        <nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+            <a asp-controller="Home" asp-action="Index">Ana sayfa</a>
+            <span>Yorumlarım</span>
+        </nav>
+
+        <h1 class="section-title">Yorumlarım</h1>
+        <div class="panel-card p-4">
+            @if (Model.Any())
+            {
+                @foreach (var review in Model)
+                {
+                    <div class="border-bottom py-3">
+                        <div class="d-flex justify-content-between gap-3">
+                            <strong>@review.UserDisplayName</strong>
+                            <span class="rating-badge">@review.Rating / 5</span>
+                        </div>
+                        <p class="mb-0 mt-2">@review.Comment</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state my-0">
+                    <span class="empty-state-icon">✎</span>
+                    <h3>Henüz yorum yapılmamış.</h3>
+                    <p>Deneyimlerini paylaşmak için işletme detay sayfalarından yorum bırakabilirsin.</p>
+                    <a class="btn bb-btn-primary" asp-controller="Businesses" asp-action="Index">İşletmeleri keşfet</a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

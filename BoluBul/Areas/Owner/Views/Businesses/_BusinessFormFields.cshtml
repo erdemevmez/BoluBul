@@ -1,0 +1,77 @@
+@model BusinessCreateViewModel
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" placeholder="Örn. Bolu Merkez Örnek Restoran" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select"><option value="">Seçiniz</option></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DistrictId" class="form-label"></label>
+        <select asp-for="DistrictId" asp-items="Model.Districts" class="form-select"><option value="">Seçiniz</option></select>
+        <span asp-validation-for="DistrictId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="NeighborhoodId" class="form-label"></label>
+        <select asp-for="NeighborhoodId" asp-items="Model.Neighborhoods" class="form-select"><option value="">Seçiniz</option></select>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" placeholder="0374 ..." />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="WhatsApp" class="form-label"></label>
+        <input asp-for="WhatsApp" class="form-control" placeholder="905..." />
+        <span asp-validation-for="WhatsApp" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" placeholder="ornek@bolubul.com" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="WebsiteUrl" class="form-label"></label>
+        <input asp-for="WebsiteUrl" class="form-control" placeholder="https://..." />
+        <span asp-validation-for="WebsiteUrl" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="ShortDescription" class="form-label"></label>
+        <input asp-for="ShortDescription" class="form-control" placeholder="İşletmeni bir cümleyle anlat" />
+        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" rows="5" class="form-control" placeholder="Hizmetlerini, öne çıkan özelliklerini ve müşterilerin bilmesi gereken detayları yaz."></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Address" class="form-label"></label>
+        <textarea asp-for="Address" rows="3" class="form-control" placeholder="Açık adres"></textarea>
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Latitude" class="form-label"></label>
+        <input asp-for="Latitude" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Longitude" class="form-label"></label>
+        <input asp-for="Longitude" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="LogoFile" class="form-label"></label>
+        <input asp-for="LogoFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+        <div class="form-hint">Sadece .jpg, .jpeg, .png ve .webp. En fazla 3 MB.</div>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="CoverFile" class="form-label"></label>
+        <input asp-for="CoverFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+        <div class="form-hint">Kapak görseli profil üst alanında kullanılır.</div>
+    </div>
+</div>
+<hr />

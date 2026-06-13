@@ -1,0 +1,47 @@
+@model BusinessEditViewModel
+@{
+    ViewData["Title"] = "İşletme bilgilerini düzenle";
+}
+
+<nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+    <a asp-area="Owner" asp-controller="Dashboard" asp-action="Index">İşletme paneli</a>
+    <a asp-area="Owner" asp-controller="Businesses" asp-action="Index">İşletmelerim</a>
+    <span>Düzenle</span>
+</nav>
+
+<div class="owner-soft-note mb-4">
+    Bilgiler güncellendikten sonra admin tarafından kontrol edilebilir.
+</div>
+
+<div class="panel-card p-4">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="row g-3 mb-3">
+            @if (!string.IsNullOrWhiteSpace(Model.ExistingLogoUrl))
+            {
+                <div class="col-md-6">
+                    <label class="form-label">Mevcut logo</label>
+                    <img src="@Model.ExistingLogoUrl" class="img-fluid rounded border" alt="Mevcut logo" />
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.ExistingCoverImageUrl))
+            {
+                <div class="col-md-6">
+                    <label class="form-label">Mevcut kapak</label>
+                    <img src="@Model.ExistingCoverImageUrl" class="img-fluid rounded border" alt="Mevcut kapak görseli" />
+                </div>
+            }
+        </div>
+        <partial name="_BusinessEditFormFields" model="Model" />
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn bb-btn-primary">Güncelle</button>
+            <a class="btn bb-btn-outline" asp-action="Index">Vazgeç</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

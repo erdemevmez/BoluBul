@@ -1,0 +1,56 @@
+@model BusinessImageManageViewModel
+@{
+    ViewData["Title"] = "Fotoğraflar";
+}
+
+<nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+    <a asp-area="Owner" asp-controller="Dashboard" asp-action="Index">İşletme paneli</a>
+    <a asp-area="Owner" asp-controller="Businesses" asp-action="Index">İşletmelerim</a>
+    <span>Fotoğraflar</span>
+</nav>
+
+<div class="panel-card p-4 mb-4">
+    <h2 class="fw-bold h4">@Model.BusinessName fotoğrafları</h2>
+    <p class="text-muted">Galeri fotoğrafları işletme detay sayfasında gösterilir. Sadece .jpg, .jpeg, .png ve .webp dosyaları yüklenebilir.</p>
+    <form asp-action="UploadImage" method="post" enctype="multipart/form-data" class="row g-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="businessId" value="@Model.BusinessId" />
+        <div class="col-md-6">
+            <label class="form-label" for="imageFile">Fotoğraf</label>
+            <input id="imageFile" type="file" name="imageFile" class="form-control" accept=".jpg,.jpeg,.png,.webp" required />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="altText">Alt metin</label>
+            <input id="altText" type="text" name="altText" class="form-control" placeholder="Fotoğraf açıklaması" />
+        </div>
+        <div class="col-md-2 d-grid align-self-end"><button class="btn bb-btn-primary">Yükle</button></div>
+    </form>
+</div>
+
+@if (Model.Images.Any())
+{
+    <div class="row g-3">
+        @foreach (var image in Model.Images)
+        {
+            <div class="col-md-4">
+                <div class="panel-card p-2">
+                    <img src="@image.ImageUrl" class="img-fluid rounded" alt="@(image.AltText ?? Model.BusinessName)" />
+                    <form asp-action="DeleteImage" method="post" class="mt-2" onsubmit="return confirm('Bu fotoğrafı silmek istediğinize emin misiniz?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="imageId" value="@image.Id" />
+                        <input type="hidden" name="businessId" value="@Model.BusinessId" />
+                        <button class="btn btn-sm btn-outline-danger w-100">Sil</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <span class="empty-state-icon">▧</span>
+        <h3>Bu işletmenin galeri fotoğrafı henüz eklenmemiş.</h3>
+        <p>İşletmeni daha güvenilir göstermek için birkaç net fotoğraf yükleyebilirsin.</p>
+    </div>
+}

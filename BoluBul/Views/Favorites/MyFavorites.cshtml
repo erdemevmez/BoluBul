@@ -1,0 +1,40 @@
+@model IReadOnlyList<BusinessCardViewModel>
+@{
+    ViewData["Title"] = "Favorilerim";
+}
+
+<section class="page-section">
+    <div class="container">
+        <nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+            <a asp-controller="Home" asp-action="Index">Ana sayfa</a>
+            <span>Favorilerim</span>
+        </nav>
+
+        <div class="mb-4">
+            <div class="section-eyebrow">Favorilerim</div>
+            <h1 class="section-title">Kaydettiğin işletmeler</h1>
+            <p class="text-muted mb-0">Daha sonra kolayca ulaşmak istediğin işletmeleri burada görebilirsin.</p>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var business in Model)
+                {
+                    <div class="col-md-6 col-xl-4">
+                        <partial name="_BusinessCard" model="business" />
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="empty-state-icon">♡</span>
+                <h3>Favorilere eklediğin işletme yok.</h3>
+                <p>Beğendiğin işletmeleri favorilere ekleyerek daha sonra hızlıca ulaşabilirsin.</p>
+                <a class="btn bb-btn-primary" asp-controller="Businesses" asp-action="Index">İşletmeleri keşfet</a>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,83 @@
+@model BusinessListViewModel
+@{
+    ViewData["Title"] = "Bolu’daki İşletmeler";
+    var hasFilters = !string.IsNullOrWhiteSpace(Model.Search) || !string.IsNullOrWhiteSpace(Model.Category) || Model.DistrictId.HasValue;
+}
+
+<section class="page-section">
+    <div class="container">
+        <nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+            <a asp-controller="Home" asp-action="Index">Ana sayfa</a>
+            <span>İşletmeler</span>
+        </nav>
+
+        <div class="mb-4">
+            <div class="section-eyebrow">İşletmeler</div>
+            <h1 class="section-title">Bolu’daki işletmeler</h1>
+            <p class="text-muted">Kategori, ilçe veya işletme adına göre Bolu’daki yerel işletmeleri keşfet.</p>
+        </div>
+
+        <form class="panel-card p-3 mb-4" method="get">
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <label class="form-label" for="businessSearch">Arama</label>
+                    <input id="businessSearch" class="form-control" name="search" value="@Model.Search" placeholder="İşletme adı veya kategori" />
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label" for="categoryFilter">Kategori</label>
+                    <select id="categoryFilter" class="form-select" name="category">
+                        <option value="">Tüm kategoriler</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Slug" selected="@(Model.Category == category.Slug)">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label" for="districtFilter">İlçe</label>
+                    <select id="districtFilter" class="form-select" name="districtId">
+                        <option value="">Tüm ilçeler</option>
+                        @foreach (var district in Model.Districts)
+                        {
+                            <option value="@district.Id" selected="@(Model.DistrictId == district.Id)">@district.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label" for="sortFilter">Sıralama</label>
+                    <select id="sortFilter" class="form-select" name="sort">
+                        <option value="newest" selected="@(Model.Sort == "newest")">En yeni</option>
+                        <option value="rating" selected="@(Model.Sort == "rating")">Puana göre</option>
+                        <option value="popular" selected="@(Model.Sort == "popular")">Popüler</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 d-grid align-self-end"><button class="btn bb-btn-primary">Ara</button></div>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <strong>@Model.TotalCount işletme bulundu</strong>
+        </div>
+
+        @if (Model.Businesses.Any())
+        {
+            <div class="row g-4">
+                @foreach (var business in Model.Businesses)
+                {
+                    <div class="col-md-6 col-xl-4">
+                        <partial name="_BusinessCard" model="business" />
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="empty-state-icon">⌕</span>
+                <h3>@(hasFilters ? "Aramana uygun işletme bulunamadı." : "Henüz işletme bulunamadı.")</h3>
+                <p>@(hasFilters ? "Farklı bir kelime veya kategori deneyebilirsin." : "Onaylanan işletmeler burada listelenecek.")</p>
+                <a class="btn bb-btn-outline" asp-controller="Businesses" asp-action="Index">Filtreleri temizle</a>
+            </div>
+        }
+    </div>
+</section>

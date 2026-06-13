@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BoluBul</title>
+    @* TODO: Sonraki SEO aşamasında sayfa bazlı meta description altyapısı eklenebilir. *@
+    <script type="importmap"></script>
+    <script>
+        (function () {
+            var theme = localStorage.getItem("bolubul-theme");
+            document.documentElement.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
+        })();
+    </script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bolubul.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BoluBul.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg bb-navbar sticky-top">
+            <div class="container">
+                <a class="navbar-brand brand-mark" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-symbol">BB</span>
+                    <span>BoluBul</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                        aria-expanded="false" aria-label="Menüyü aç">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav mx-auto gap-lg-2">
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Ana sayfa</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Businesses" asp-action="Index">İşletmeler</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Categories" asp-action="Index">Kategoriler</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Businesses?sort=popular">Harita</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="Owner" asp-controller="Businesses" asp-action="Create">İşletme ekle</a></li>
+                    </ul>
+                    <div class="d-flex align-items-lg-center gap-2 flex-column flex-lg-row">
+                        <button type="button" class="theme-toggle" data-theme-toggle>
+                            <span data-theme-icon>☾</span>
+                            <span data-theme-text>Koyu</span>
+                        </button>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm bb-btn-outline" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Yönetim paneli</a>
+                            }
+                            @if (User.IsInRole("BusinessOwner") || User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm bb-btn-outline" asp-area="Owner" asp-controller="Dashboard" asp-action="Index">İşletme paneli</a>
+                            }
+                            <a class="btn btn-sm bb-btn-light" asp-area="" asp-controller="Favorites" asp-action="MyFavorites">Favorilerim</a>
+                            <span class="nav-user">@User.Identity.Name</span>
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm bb-btn-primary">Çıkış yap</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm bb-btn-outline" asp-area="" asp-controller="Account" asp-action="Login">Giriş yap</a>
+                            <a class="btn btn-sm bb-btn-primary" asp-area="" asp-controller="Account" asp-action="Register">Kayıt ol</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        <div class="bb-alert-stack container">
+            @if (TempData["Success"] is not null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            }
+            @if (TempData["Info"] is not null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    @TempData["Info"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            }
+            @if (TempData["Error"] is not null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            }
+            @if (TempData["ReviewSuccess"] is not null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["ReviewSuccess"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            }
+            @if (TempData["ReviewError"] is not null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ReviewError"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            }
+            @if (TempData["UploadError"] is not null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["UploadError"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            }
+        </div>
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="brand-mark text-white mb-3">
+                        <span class="brand-symbol brand-symbol-light">BB</span>
+                        <span>BoluBul</span>
+                    </div>
+                    <p class="mb-0">BoluBul, Bolu’daki yerel işletmeleri keşfetmeyi kolaylaştıran dijital işletme rehberidir.</p>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h6>Hızlı bağlantılar</h6>
+                    <a asp-area="" asp-controller="Businesses" asp-action="Index">İşletmeler</a>
+                    <a asp-area="" asp-controller="Categories" asp-action="Index">Kategoriler</a>
+                    <a asp-area="Owner" asp-controller="Businesses" asp-action="Create">İşletme ekle</a>
+                    <a asp-area="" asp-controller="Account" asp-action="Login">Giriş yap</a>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h6>Kategoriler</h6>
+                    <a href="/Categories/Details/yiyecek-icecek">Yiyecek &amp; İçecek</a>
+                    <a href="/Categories/Details/otomotiv">Otomotiv</a>
+                    <a href="/Categories/Details/konaklama">Konaklama</a>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h6>Yasal</h6>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik politikası</a>
+                    <a href="mailto:info@bolubul.com">İletişim</a>
+                </div>
+                <div class="col-lg-2">
+                    <h6>İletişim</h6>
+                    <p class="mb-1">Bolu merkezli yerel işletme keşif platformu.</p>
+                    <p class="mb-0">info@bolubul.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 BoluBul</div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/theme-toggle.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

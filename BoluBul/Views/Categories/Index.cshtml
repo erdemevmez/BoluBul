@@ -1,0 +1,39 @@
+@model CategoryListViewModel
+@{
+    ViewData["Title"] = "Kategoriler";
+}
+
+<section class="page-section">
+    <div class="container">
+        <nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+            <a asp-controller="Home" asp-action="Index">Ana sayfa</a>
+            <span>Kategoriler</span>
+        </nav>
+
+        <div class="mb-4">
+            <div class="section-eyebrow">Kategoriler</div>
+            <h1 class="section-title">Kategoriler</h1>
+            <p class="text-muted mb-0">Bolu’daki işletmeleri ihtiyacına göre kategorilere ayırdık.</p>
+        </div>
+
+        @if (Model.Categories.Any())
+        {
+            <div class="row g-3">
+                @foreach (var category in Model.Categories)
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <partial name="_CategoryCard" model="category" />
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="empty-state-icon">▦</span>
+                <h3>Kayıtlı kategori bulunmuyor.</h3>
+                <p>Kategoriler eklendiğinde burada listelenecek.</p>
+            </div>
+        }
+    </div>
+</section>

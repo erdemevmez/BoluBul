@@ -1,0 +1,45 @@
+@model BusinessCardViewModel
+@{
+    var categoryName = string.IsNullOrWhiteSpace(Model.CategoryName) ? "Kategori belirtilmemiş" : Model.CategoryName;
+    var districtName = string.IsNullOrWhiteSpace(Model.DistrictName) ? "İlçe bilgisi yok" : Model.DistrictName;
+    var logoText = categoryName.Length >= 2
+        ? categoryName.Substring(0, 2).ToUpperInvariant()
+        : categoryName.Substring(0, 1).ToUpperInvariant();
+}
+
+<article class="business-card bb-card-hover">
+    <div class="business-cover">
+        @if (Model.IsFeatured)
+        {
+            <span class="featured-badge position-absolute top-0 end-0 m-3">Öne çıkan</span>
+        }
+    </div>
+    <div class="business-card-body">
+        <div class="d-flex gap-3 align-items-end">
+            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+            {
+                <img src="@Model.LogoUrl" alt="@Model.Name" class="business-logo object-fit-cover" />
+            }
+            else
+            {
+                <div class="business-logo" aria-hidden="true">@logoText</div>
+            }
+            <div class="flex-grow-1 pb-1">
+                <h5 class="fw-bold mb-1">@Model.Name</h5>
+                <div class="business-card-meta">@categoryName · @districtName</div>
+            </div>
+        </div>
+        <p class="text-muted mt-3 mb-3">@(!string.IsNullOrWhiteSpace(Model.ShortDescription) ? Model.ShortDescription : "Bu işletme için kısa açıklama henüz eklenmemiş.")</p>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="rating-badge">@Model.AverageRating.ToString("0.0") / 5</span>
+            <span class="muted-small">@Model.ReviewCount yorum</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn bb-btn-primary flex-fill" asp-controller="Businesses" asp-action="Details" asp-route-slug="@Model.Slug">Detayları gör</a>
+            @if (!string.IsNullOrWhiteSpace(Model.WhatsApp))
+            {
+                <a class="btn bb-btn-outline" asp-controller="Stats" asp-action="WhatsAppClick" asp-route-businessId="@Model.Id">WhatsApp</a>
+            }
+        </div>
+    </div>
+</article>

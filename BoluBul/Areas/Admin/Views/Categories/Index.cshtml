@@ -1,0 +1,63 @@
+@model IReadOnlyList<AdminCategoryRowViewModel>
+@{
+    ViewData["Title"] = "Kategori yönetimi";
+}
+
+<nav class="bb-breadcrumb" aria-label="Sayfa yolu">
+    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Yönetim paneli</a>
+    <span>Kategoriler</span>
+</nav>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="panel-card p-4">
+            <h2 class="fw-bold h4">Yeni kategori</h2>
+            <p class="text-muted">Kategori adı girildiğinde slug otomatik oluşturulur.</p>
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="mb-3"><label class="form-label" for="categoryName">Ad</label><input id="categoryName" name="name" class="form-control" required /></div>
+                <div class="mb-3"><label class="form-label" for="categoryIcon">İkon metni</label><input id="categoryIcon" name="icon" class="form-control" maxlength="100" /></div>
+                <div class="mb-3"><label class="form-label" for="displayOrder">Sıra</label><input id="displayOrder" name="displayOrder" type="number" value="100" class="form-control" /></div>
+                <button class="btn bb-btn-primary w-100">Kategori oluştur</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="panel-card p-4">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Ad</th><th>Slug</th><th>İşletme sayısı</th><th>Durum</th><th>İşlemler</th></tr></thead>
+                        <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.Name</strong><div class="text-muted small">@item.Icon</div></td>
+                                <td>@item.Slug</td>
+                                <td>@item.BusinessCount</td>
+                                <td><span class="status-pill @(item.IsActive ? "status-success" : "status-muted")">@(item.IsActive ? "Aktif" : "Pasif")</span></td>
+                                <td>
+                                    <form asp-action="ToggleActive" method="post" onsubmit="return confirm('Bu kategorinin yayın durumunu değiştirmek istediğinize emin misiniz?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button class="btn btn-sm bb-btn-outline">@(item.IsActive ? "Pasife al" : "Aktif et")</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state my-0">
+                    <span class="empty-state-icon">▦</span>
+                    <h3>Kayıtlı kategori bulunmuyor.</h3>
+                    <p>İlk kategoriyi oluşturarak işletmeleri düzenli şekilde gruplayabilirsin.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
